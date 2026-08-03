@@ -1,0 +1,144 @@
+{
+  "service": "kart-notification-service",
+  "exchanges": [
+    { "name": "notification.exchange", "type": "topic", "durable": true },
+    { "name": "notification.dlx", "type": "topic", "durable": true }
+  ],
+  "externalExchanges": [
+    { "name": "order.exchange", "type": "topic", "durable": true },
+    { "name": "payment.exchange", "type": "topic", "durable": true },
+    { "name": "wishlist.exchange", "type": "topic", "durable": true },
+    { "name": "identity.exchange", "type": "topic", "durable": true },
+    { "name": "shipping.exchange", "type": "topic", "durable": true },
+    { "name": "tracking.exchange", "type": "topic", "durable": true },
+    { "name": "user.exchange", "type": "topic", "durable": true }
+  ],
+  "publishedEvents": [
+    { "eventType": "NotificationSent", "exchange": "notification.exchange", "routingKey": "notification.notification.sent" }
+  ],
+  "queues": [
+    {
+      "name": "notification.order-events.queue",
+      "durable": true,
+      "bindings": [
+        { "exchange": "order.exchange", "routingKey": "order.#" }
+      ],
+      "deadLetter": { "exchange": "notification.dlx", "routingKey": "notification.order-events.dlq" },
+      "retryLadder": {
+        "requeueTo": "notification.order-events.queue",
+        "tiers": [
+          { "name": "notification.order-events.retry.5s", "ttlMs": 5000 },
+          { "name": "notification.order-events.retry.30s", "ttlMs": 30000 },
+          { "name": "notification.order-events.retry.1m", "ttlMs": 60000 },
+          { "name": "notification.order-events.retry.5m", "ttlMs": 300000 },
+          { "name": "notification.order-events.retry.15m", "ttlMs": 900000 }
+        ]
+      }
+    },
+    {
+      "name": "notification.payment-events.queue",
+      "durable": true,
+      "bindings": [
+        { "exchange": "payment.exchange", "routingKey": "payment.#" }
+      ],
+      "deadLetter": { "exchange": "notification.dlx", "routingKey": "notification.payment-events.dlq" },
+      "retryLadder": {
+        "requeueTo": "notification.payment-events.queue",
+        "tiers": [
+          { "name": "notification.payment-events.retry.5s", "ttlMs": 5000 },
+          { "name": "notification.payment-events.retry.30s", "ttlMs": 30000 },
+          { "name": "notification.payment-events.retry.1m", "ttlMs": 60000 },
+          { "name": "notification.payment-events.retry.5m", "ttlMs": 300000 },
+          { "name": "notification.payment-events.retry.15m", "ttlMs": 900000 }
+        ]
+      }
+    },
+    {
+      "name": "notification.wishlist-events.queue",
+      "durable": true,
+      "bindings": [
+        { "exchange": "wishlist.exchange", "routingKey": "wishlist.price-alert.triggered" }
+      ],
+      "deadLetter": { "exchange": "notification.dlx", "routingKey": "notification.wishlist-events.dlq" },
+      "retryLadder": {
+        "requeueTo": "notification.wishlist-events.queue",
+        "tiers": [
+          { "name": "notification.wishlist-events.retry.30s", "ttlMs": 30000 },
+          { "name": "notification.wishlist-events.retry.5m", "ttlMs": 300000 }
+        ]
+      }
+    },
+    {
+      "name": "notification.identity-events.queue",
+      "durable": true,
+      "bindings": [
+        { "exchange": "identity.exchange", "routingKey": "identity.user.registered" }
+      ],
+      "deadLetter": { "exchange": "notification.dlx", "routingKey": "notification.identity-events.dlq" },
+      "retryLadder": {
+        "requeueTo": "notification.identity-events.queue",
+        "tiers": [
+          { "name": "notification.identity-events.retry.5s", "ttlMs": 5000 },
+          { "name": "notification.identity-events.retry.30s", "ttlMs": 30000 },
+          { "name": "notification.identity-events.retry.5m", "ttlMs": 300000 }
+        ]
+      }
+    },
+    {
+      "name": "notification.shipping-events.queue",
+      "durable": true,
+      "bindings": [
+        { "exchange": "shipping.exchange", "routingKey": "shipping.shipment.dispatched" }
+      ],
+      "deadLetter": { "exchange": "notification.dlx", "routingKey": "notification.shipping-events.dlq" },
+      "retryLadder": {
+        "requeueTo": "notification.shipping-events.queue",
+        "tiers": [
+          { "name": "notification.shipping-events.retry.5s", "ttlMs": 5000 },
+          { "name": "notification.shipping-events.retry.30s", "ttlMs": 30000 },
+          { "name": "notification.shipping-events.retry.5m", "ttlMs": 300000 }
+        ]
+      }
+    },
+    {
+      "name": "notification.tracking-events.queue",
+      "durable": true,
+      "bindings": [
+        { "exchange": "tracking.exchange", "routingKey": "tracking.delivery-status.updated" }
+      ],
+      "deadLetter": { "exchange": "notification.dlx", "routingKey": "notification.tracking-events.dlq" },
+      "retryLadder": {
+        "requeueTo": "notification.tracking-events.queue",
+        "tiers": [
+          { "name": "notification.tracking-events.retry.5s", "ttlMs": 5000 },
+          { "name": "notification.tracking-events.retry.30s", "ttlMs": 30000 },
+          { "name": "notification.tracking-events.retry.5m", "ttlMs": 300000 }
+        ]
+      }
+    },
+    {
+      "name": "notification.user-events.queue",
+      "durable": true,
+      "bindings": [
+        { "exchange": "user.exchange", "routingKey": "user.notification-preference-updated" }
+      ],
+      "deadLetter": { "exchange": "notification.dlx", "routingKey": "notification.user-events.dlq" },
+      "retryLadder": {
+        "requeueTo": "notification.user-events.queue",
+        "tiers": [
+          { "name": "notification.user-events.retry.30s", "ttlMs": 30000 },
+          { "name": "notification.user-events.retry.5m", "ttlMs": 300000 }
+        ]
+      }
+    }
+  ],
+  "deadLetterQueues": [
+    { "name": "notification.order-events.dlq", "exchange": "notification.dlx", "routingKey": "notification.order-events.dlq" },
+    { "name": "notification.payment-events.dlq", "exchange": "notification.dlx", "routingKey": "notification.payment-events.dlq" },
+    { "name": "notification.wishlist-events.dlq", "exchange": "notification.dlx", "routingKey": "notification.wishlist-events.dlq" },
+    { "name": "notification.identity-events.dlq", "exchange": "notification.dlx", "routingKey": "notification.identity-events.dlq" },
+    { "name": "notification.shipping-events.dlq", "exchange": "notification.dlx", "routingKey": "notification.shipping-events.dlq" },
+    { "name": "notification.tracking-events.dlq", "exchange": "notification.dlx", "routingKey": "notification.tracking-events.dlq" },
+    { "name": "notification.user-events.dlq", "exchange": "notification.dlx", "routingKey": "notification.user-events.dlq" }
+  ]
+}

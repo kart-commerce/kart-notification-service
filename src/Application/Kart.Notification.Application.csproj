@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Kart.Notification.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- IAuditLogWriter is a lightweight port this layer's handlers call directly (order-service's own precedent); the concrete EfAuditLogWriter still lives in Infrastructure. -->
+    <PackageReference Include="Kart.Shared.Auditing" Version="0.1.0" />
+    <PackageReference Include="FluentValidation" Version="11.10.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.10.0" />
+    <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
+  </ItemGroup>
+
+</Project>

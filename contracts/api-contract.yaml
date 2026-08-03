@@ -1,0 +1,12 @@
+openapi: 3.0.3
+info:
+  title: kart-notification-service
+  version: "1.0.0"
+  description: >
+    Consumer-only service — no public or internal-ops API surface. Every business outcome is
+    driven entirely by the message bus (see message-bus-manifest.json / messaging-contract.md).
+    This file exists to make that absence explicit and discoverable, matching the approved
+    kart-platform/docs/services/kart-notification-service/api-contract.yaml.
+servers: []
+paths: {}
+components: {}

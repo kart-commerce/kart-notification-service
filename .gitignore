@@ -141,3 +141,44 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+## .NET (dotnet new gitignore) + kart-conventions.md secret-file additions
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio / Rider / VS Code
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.sln.iml
+.idea/
+
+# Secrets file referenced by GlobalConfig:Path - must never live inside the repo, but ignored here
+# too as a defense-in-depth backstop.
+globalconfig.json
+
+# Per-developer local overrides (currently just GlobalConfig:Path) - machine-specific, never committed.
+# Commit appsettings.Local.json.example instead.
+appsettings.Local.json
+
+# NuGet - except this repo's own vendored packages/ (kart-shared's packed Kart.Shared.* .nupkg
+# files, committed so Docker/CI builds are self-contained without a published feed - see nuget.config).
+*.nupkg
+*.snupkg
+!/packages/*.nupkg
+
+# Test results
+[Tt]est[Rr]esult*/
+coverage*.json
+coverage*.xml
+coverage*.info
+*.coverage
+*.coveragexml
