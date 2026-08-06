@@ -16,5 +16,44 @@ services:
       timeout: 5s
       retries: 10
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: kart-notification-rabbitmq
+    environment:
+      # RabbitMQ's default "guest" user is restricted to loopback-only connections - a container
+      # reaching it over the compose bridge network does not count as loopback, so a dedicated
+      # non-guest user is required (same fix every other service's own docker-compose.yml applies).
+      RABBITMQ_DEFAULT_USER: "notification"
+      RABBITMQ_DEFAULT_PASS: "notification"
+    ports:
+      - "5675:5672"
+      - "15675:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kart-notification-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      # ${NOTIFICATION_PORT} matches kart-devops/ports.env's canonical value for this service --
+      # `source ../kart-devops/ports.env` first to pick it up automatically; the :-8092 fallback
+      # is only for running this repo fully standalone, with no kart-devops checkout alongside it.
+      - "${NOTIFICATION_PORT:-8092}:8080"
+    environment:
+      ConnectionStrings__NotificationDb: "Host=postgres;Port=5432;Database=kart_notification;Username=postgres;Password=postgres"
+      RabbitMq__HostName: "rabbitmq"
+      RabbitMq__UserName: "notification"
+      RabbitMq__Password: "notification"
+
 volumes:
   kart-notification-postgres-data:
